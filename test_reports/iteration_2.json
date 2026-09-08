@@ -56,7 +56,7 @@
   
   "should_main_agent_self_test": false,
   
-  "context_for_next_testing_agent": "Contact form and admin messages functionality fully tested. Backend tests in /app/backend/tests/test_contact_messages.py cover all CRUD operations. Admin credentials: harry.miles@aaasat.co.uk / lBPiq815!??!. Resend email may fail in test mode but messages are always stored in DB.",
+  "context_for_next_testing_agent": "Contact form and admin messages functionality fully tested. Backend tests in /app/backend/tests/test_contact_messages.py cover all CRUD operations. Admin test credentials must be supplied through environment variables. Contact messages are always stored in DB.",
   
   "verified_bug_fixes": {
     "contact_form_mailto_removed": "VERIFIED - Contact form now uses axios.post to /api/contact, no mailto: links in App.js",

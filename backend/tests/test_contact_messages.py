@@ -79,9 +79,13 @@ class TestAdminMessagesEndpoints:
     @pytest.fixture
     def admin_token(self):
         """Get admin authentication token"""
+        admin_email = os.environ.get("ADMIN_TEST_EMAIL")
+        admin_password = os.environ.get("ADMIN_TEST_PASSWORD")
+        if not admin_email or not admin_password:
+            pytest.skip("ADMIN_TEST_EMAIL and ADMIN_TEST_PASSWORD are not configured")
         login_data = {
-            "email": "harry.miles@aaasat.co.uk",
-            "password": "lBPiq815!??!"
+            "email": admin_email,
+            "password": admin_password
         }
         response = requests.post(f"{BASE_URL}/api/auth/login", json=login_data)
         if response.status_code != 200:

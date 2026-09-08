@@ -76,7 +76,7 @@ App allowing users to update current wait times in A&E departments of UK hospita
 
 ## Admin Credentials
 - Email: harry.miles@aaasat.co.uk
-- Password: lBPiq815!??!
+- Password: configured privately in the deployment environment
 
 ## Key API Endpoints
 - POST /api/auth/register, POST /api/auth/login, GET /api/auth/me

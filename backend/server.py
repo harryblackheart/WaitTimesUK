@@ -17,14 +17,13 @@ import httpx
 import asyncio
 import re
 from bs4 import BeautifulSoup
-import resend
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# Resend configuration
-resend.api_key = os.environ.get('RESEND_API_KEY')
-ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL')
+# Telegram notifications. Values are supplied only by the hosting environment.
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
+TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
@@ -32,7 +31,7 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # JWT Configuration
-JWT_SECRET = os.environ.get('JWT_SECRET', 'ae-wait-times-secret-key-change-in-production')
+JWT_SECRET = os.environ['JWT_SECRET']
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
 
@@ -161,6 +160,28 @@ def decode_token(token: str) -> dict:
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
+
+async def send_telegram_notification(message: str) -> bool:
+    """Send an admin notification without exposing Telegram credentials."""
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        logging.warning("Telegram notification skipped: credentials are not configured")
+        return False
+
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as notification_client:
+            response = await notification_client.post(
+                f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+                json={
+                    "chat_id": TELEGRAM_CHAT_ID,
+                    "text": message,
+                    "disable_web_page_preview": True,
+                },
+            )
+            response.raise_for_status()
+        return True
+    except Exception as exc:
+        logging.error("Failed to send Telegram notification: %s", exc)
+        return False
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if not credentials:
@@ -1051,36 +1072,13 @@ async def activate_payment(data: PaymentActivation, user=Depends(require_auth)):
         {"$set": {"is_paid": True, "payment_id": data.subscription_id, "payment_method": "paypal_subscription"}}
     )
 
-    # Send notification email to admin via Resend
-    if resend.api_key and ADMIN_EMAIL:
-        try:
-            html_content = f"""
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <div style="background-color: #007F3B; padding: 20px; text-align: center;">
-                    <h1 style="color: white; margin: 0; font-size: 20px;">WaitTimes.uk - New Payment Received!</h1>
-                </div>
-                <div style="padding: 20px; background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                    <p style="font-size: 16px; color: #0A1128;"><strong>A user has subscribed and been automatically activated:</strong></p>
-                    <table style="width: 100%; margin: 16px 0;">
-                        <tr><td style="padding: 8px; font-weight: bold;">Name:</td><td style="padding: 8px;">{user['name']}</td></tr>
-                        <tr><td style="padding: 8px; font-weight: bold;">Email:</td><td style="padding: 8px;">{user['email']}</td></tr>
-                        <tr><td style="padding: 8px; font-weight: bold;">Subscription ID:</td><td style="padding: 8px;">{data.subscription_id}</td></tr>
-                    </table>
-                    <p style="color: #007F3B; font-weight: bold;">Access has been granted automatically.</p>
-                </div>
-                <div style="padding: 12px; text-align: center; color: #94a3b8; font-size: 12px;">
-                    Sent from WaitTimes.uk Payment System
-                </div>
-            </div>
-            """
-            await asyncio.to_thread(resend.Emails.send, {
-                "from": "WaitTimes.uk <onboarding@resend.dev>",
-                "to": [ADMIN_EMAIL],
-                "subject": f"New Payment: {user['name']} ({user['email']})",
-                "html": html_content
-            })
-        except Exception as e:
-            logging.error(f"Failed to send payment notification email: {e}")
+    await send_telegram_notification(
+        "\U0001f4b3 WaitTimes.uk payment received\n"
+        f"Name: {user['name']}\n"
+        f"Email: {user['email']}\n"
+        f"Subscription: {data.subscription_id}\n"
+        "Access granted automatically."
+    )
 
     return {"message": "Payment activated successfully", "is_paid": True}
 
@@ -1088,43 +1086,20 @@ async def activate_payment(data: PaymentActivation, user=Depends(require_auth)):
 
 @api_router.post("/payment/claim")
 async def claim_payment(user=Depends(require_auth)):
-    """User claims they've completed payment - notifies admin via email"""
-    # Send notification email to admin via Resend
-    if resend.api_key and ADMIN_EMAIL:
-        try:
-            html_content = f"""
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <div style="background-color: #005EB8; padding: 20px; text-align: center;">
-                    <h1 style="color: white; margin: 0; font-size: 20px;">WaitTimes.uk - New Payment Claim</h1>
-                </div>
-                <div style="padding: 20px; background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                    <p style="font-size: 16px; color: #0A1128;"><strong>A user has claimed they completed payment:</strong></p>
-                    <table style="width: 100%; margin: 16px 0;">
-                        <tr><td style="padding: 8px; font-weight: bold;">Name:</td><td style="padding: 8px;">{user['name']}</td></tr>
-                        <tr><td style="padding: 8px; font-weight: bold;">Email:</td><td style="padding: 8px;">{user['email']}</td></tr>
-                        <tr><td style="padding: 8px; font-weight: bold;">User ID:</td><td style="padding: 8px;">{user['id']}</td></tr>
-                    </table>
-                    <p style="color: #64748b;">Please verify the payment in your PayPal account and activate their access in the Admin Dashboard.</p>
-                </div>
-                <div style="padding: 12px; text-align: center; color: #94a3b8; font-size: 12px;">
-                    Sent from WaitTimes.uk Payment System
-                </div>
-            </div>
-            """
-            await asyncio.to_thread(resend.Emails.send, {
-                "from": "WaitTimes.uk <onboarding@resend.dev>",
-                "to": [ADMIN_EMAIL],
-                "subject": f"Payment Claim: {user['name']} ({user['email']})",
-                "html": html_content
-            })
-        except Exception as e:
-            logging.error(f"Failed to send payment claim email: {e}")
+    """User claims they've completed payment and notifies the admin."""
+    await send_telegram_notification(
+        "\u26a0\ufe0f WaitTimes.uk payment claim\n"
+        f"Name: {user['name']}\n"
+        f"Email: {user['email']}\n"
+        f"User ID: {user['id']}\n"
+        "Verify the payment in PayPal before activating access."
+    )
 
     return {"message": "Payment claim submitted. Your access will be activated shortly."}
 
 @api_router.post("/contact")
 async def submit_contact(data: ContactFormRequest):
-    """Submit a contact form message - stored in DB and forwarded via Resend"""
+    """Store a contact form message for review in the admin dashboard."""
     # Store in DB
     msg_doc = {
         "id": str(uuid.uuid4()),
@@ -1135,36 +1110,6 @@ async def submit_contact(data: ContactFormRequest):
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.contact_messages.insert_one(msg_doc)
-
-    # Try to send email via Resend
-    if resend.api_key and ADMIN_EMAIL:
-        try:
-            html_content = f"""
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <div style="background-color: #005EB8; padding: 20px; text-align: center;">
-                    <h1 style="color: white; margin: 0; font-size: 20px;">WaitTimes.uk - New Contact Message</h1>
-                </div>
-                <div style="padding: 20px; background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                    <p><strong>From:</strong> {data.name}</p>
-                    <p><strong>Email:</strong> {data.email}</p>
-                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 16px 0;" />
-                    <p><strong>Message:</strong></p>
-                    <p style="white-space: pre-wrap;">{data.message}</p>
-                </div>
-                <div style="padding: 12px; text-align: center; color: #94a3b8; font-size: 12px;">
-                    Sent from WaitTimes.uk Contact Form
-                </div>
-            </div>
-            """
-            await asyncio.to_thread(resend.Emails.send, {
-                "from": "WaitTimes.uk <onboarding@resend.dev>",
-                "to": [ADMIN_EMAIL],
-                "subject": f"WaitTimes Contact: {data.name}",
-                "html": html_content
-            })
-        except Exception as e:
-            logging.error(f"Failed to send contact email via Resend: {e}")
-            # Message is still stored in DB, so it's not lost
 
     return {"message": "Your message has been sent. We'll get back to you soon."}
 
@@ -1257,14 +1202,16 @@ async def seed_data():
         }
         await db.hospitals.insert_one(hospital_doc)
     
-    # Create admin user
-    admin_exists = await db.users.find_one({"email": "harry.miles@aaasat.co.uk"})
-    if not admin_exists:
+    # Optionally create the initial admin from protected environment values.
+    seed_admin_email = os.environ.get("SEED_ADMIN_EMAIL")
+    seed_admin_password = os.environ.get("SEED_ADMIN_PASSWORD")
+    admin_exists = await db.users.find_one({"email": seed_admin_email}) if seed_admin_email else None
+    if seed_admin_email and seed_admin_password and not admin_exists:
         admin_doc = {
             "id": str(uuid.uuid4()),
-            "email": "harry.miles@aaasat.co.uk",
+            "email": seed_admin_email.lower(),
             "name": "Harry Miles",
-            "password_hash": hash_password("lBPiq815!??!"),
+            "password_hash": hash_password(seed_admin_password),
             "is_paid": True,
             "is_admin": True,
             "payment_id": "admin",
