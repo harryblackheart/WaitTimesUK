@@ -1,0 +1,139 @@
+{
+  "theme": "light",
+  "archetype": "4",
+  "archetype_name": "Swiss & High-Contrast (NHS Style)",
+  "typography": {
+    "fonts": {
+      "headings": "'Manrope', sans-serif",
+      "body": "'IBM Plex Sans', sans-serif",
+      "mono": "'JetBrains Mono', monospace"
+    },
+    "scale": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight",
+      "h3": "text-xl sm:text-2xl font-bold",
+      "h4": "text-lg sm:text-xl font-semibold",
+      "body": "text-base leading-relaxed text-slate-700",
+      "small": "text-sm text-slate-500",
+      "overline": "text-xs font-bold uppercase tracking-[0.2em] text-slate-500"
+    }
+  },
+  "colors": {
+    "brand": {
+      "primary": "#005EB8",
+      "primary_hover": "#004C97",
+      "secondary": "#E8EDEE",
+      "accent": "#00A9CE"
+    },
+    "surface": {
+      "background": "#F8FAFC",
+      "card": "#FFFFFF",
+      "glass": "bg-white/80 backdrop-blur-xl border-b border-slate-200",
+      "header": "bg-white/90 backdrop-blur-xl border-b border-slate-200"
+    },
+    "text": {
+      "primary": "#0A1128",
+      "secondary": "#475569",
+      "inverse": "#FFFFFF",
+      "link": "#005EB8"
+    },
+    "status": {
+      "success": {
+        "bg": "#007F3B",
+        "text": "#FFFFFF",
+        "soft_bg": "#E5F2E8",
+        "soft_text": "#007F3B"
+      },
+      "warning": {
+        "bg": "#FFB81C",
+        "text": "#1A1A1A",
+        "soft_bg": "#FFF8E5",
+        "soft_text": "#B38000"
+      },
+      "error": {
+        "bg": "#D5281B",
+        "text": "#FFFFFF",
+        "soft_bg": "#FAE9E8",
+        "soft_text": "#D5281B"
+      },
+      "info": {
+        "bg": "#00A9CE",
+        "text": "#0A1128",
+        "soft_bg": "#E5F6FA",
+        "soft_text": "#00748F"
+      }
+    },
+    "border": {
+      "default": "#E2E8F0",
+      "focus": "#FFEB3B"
+    }
+  },
+  "layout_and_spacing": {
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "card_padding": "p-6 sm:p-8",
+    "section_gap": "gap-12 md:gap-24",
+    "bento_grid": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6",
+    "radius": {
+      "sm": "rounded-sm",
+      "md": "rounded-md",
+      "lg": "rounded-lg",
+      "full": "rounded-full"
+    }
+  },
+  "components": {
+    "card": {
+      "base": "bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden",
+      "hover": "hover:shadow-md hover:border-slate-300 transition-all duration-200"
+    },
+    "button": {
+      "primary": "bg-[#005EB8] hover:bg-[#004C97] text-white font-semibold py-2 px-4 rounded-md transition-colors",
+      "secondary": "bg-[#E8EDEE] hover:bg-[#D8DEDF] text-[#0A1128] font-semibold py-2 px-4 rounded-md transition-colors",
+      "destructive": "bg-[#D5281B] hover:bg-[#B32015] text-white font-semibold py-2 px-4 rounded-md transition-colors",
+      "outline": "bg-transparent border border-[#005EB8] text-[#005EB8] hover:bg-slate-50 font-semibold py-2 px-4 rounded-md transition-colors"
+    },
+    "wait_time_display": {
+      "blurred_state": "blur-md select-none pointer-events-none opacity-50",
+      "unlock_overlay": "absolute inset-0 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[2px] z-10 p-4 rounded-lg",
+      "pill_high": "bg-[#FAE9E8] text-[#D5281B] px-3 py-1 rounded-full text-sm font-bold border border-[#D5281B]/20",
+      "pill_medium": "bg-[#FFF8E5] text-[#B38000] px-3 py-1 rounded-full text-sm font-bold border border-[#FFB81C]/30",
+      "pill_low": "bg-[#E5F2E8] text-[#007F3B] px-3 py-1 rounded-full text-sm font-bold border border-[#007F3B]/20"
+    },
+    "input": {
+      "base": "w-full border-2 border-slate-300 rounded-md p-3 focus:outline-none focus:border-[#0A1128] focus:ring-4 focus:ring-[#FFEB3B]/50 transition-all text-slate-900",
+      "label": "block text-sm font-bold text-slate-700 mb-1"
+    }
+  },
+  "interactions": {
+    "hover": "transition-all duration-200 ease-in-out",
+    "focus": "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#FFEB3B] focus-visible:border-[#0A1128]",
+    "disabled": "opacity-50 cursor-not-allowed"
+  },
+  "media": {
+    "hero_bg": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/042a6030-888c-4e4e-b517-3587118cf787/images/598a58dfee2d5149ed8558a5c0836e978e54313752d5142301d58d0ebda9cbe5.png",
+      "description": "Abstract medical technology background with soft NHS blue gradients"
+    },
+    "hospital_exterior": {
+      "url": "https://images.unsplash.com/photo-1769698678497-c41f0ab47c3e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwyfHxob3NwaXRhbCUyMGV4dGVyaW9yJTIwYnVpbGRpbmclMjBtb2Rlcm58ZW58MHx8fHwxNzc0NzkyMjY5fDA&ixlib=rb-4.1.0&q=85",
+      "description": "Modern hospital building exterior"
+    },
+    "hospital_exterior_alt": {
+      "url": "https://images.pexels.com/photos/20242798/pexels-photo-20242798.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Low angle view of a modern hospital against a clear blue sky"
+    },
+    "waiting_room": {
+      "url": "https://images.pexels.com/photos/8459996/pexels-photo-8459996.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Bright and clean medical waiting room"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Use 'Manrope' for headings and 'IBM Plex Sans' for body text. Do NOT use Inter.",
+    "Implement the NHS Blue (#005EB8) as the primary brand color. Use #D5281B for high wait times, #FFB81C for medium, and #007F3B for low wait times.",
+    "For non-paying users, blur the wait times using `blur-md opacity-50 select-none` and overlay a clear CTA to pay £4.99 via PayPal to unlock.",
+    "The search hero section must be highly prominent and use the `hero_bg` image with a dark overlay (`bg-slate-900/60`) for text contrast.",
+    "Use solid white backgrounds with 1px border (`border-slate-200`) and slight shadow (`shadow-sm`) for cards.",
+    "Data updates: users can update every 15 mins, include 'Last updated' timestamp on every wait time card clearly visible.",
+    "Admin dashboard: simple, list-based, with options to 'Approve Hospital' or 'Override Wait Time'. Use a compact table view.",
+    "Include a `data-testid` attribute on all interactive elements (buttons, inputs, links, list items)."
+  ]
+}

@@ -1,0 +1,49 @@
+/* App-specific styles - most styling is in index.css and Tailwind */
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .hospital-card {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .hospital-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .wait-time-blur {
+    filter: blur(12px);
+  }
+  
+  .status-pill {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .pulse-cta,
+  .skeleton {
+    animation: none;
+  }
+  
+  .hospital-card,
+  .status-pill {
+    transition: none;
+  }
+}

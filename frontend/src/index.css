@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --nhs-blue: #005EB8;
+    --nhs-blue-dark: #004C97;
+    --nhs-dark-blue: #003087;
+    --nhs-bright-blue: #0072CE;
+    --nhs-light-blue: #41B6E6;
+    --nhs-aqua-blue: #00A9CE;
+    
+    --nhs-green: #007F3B;
+    --nhs-light-green: #78BE20;
+    
+    --nhs-warm-yellow: #FFB81C;
+    --nhs-yellow: #FFEB3B;
+    
+    --nhs-red: #D5281B;
+    --nhs-dark-pink: #7C2855;
+    --nhs-pink: #AE2573;
+    
+    --nhs-grey-1: #231F20;
+    --nhs-grey-2: #425563;
+    --nhs-grey-3: #768692;
+    --nhs-grey-4: #E8EDEE;
+    --nhs-grey-5: #F0F4F5;
+    
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 209 100% 36%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 200 12% 92%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 200 12% 92%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 193 100% 40%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 4 84% 47%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 48 100% 62%;
+    --radius: 0.5rem;
+}
+
+body {
+    margin: 0;
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #F8FAFC;
+    color: #0A1128;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Manrope', sans-serif;
+}
+
+code {
+    font-family: 'JetBrains Mono', source-code-pro, Menlo, Monaco, Consolas, monospace;
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+}
+
+/* NHS Focus styles for accessibility */
+*:focus-visible {
+    outline: 4px solid var(--nhs-yellow);
+    outline-offset: 0;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--nhs-grey-5);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--nhs-grey-3);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--nhs-grey-2);
+}
+
+/* Wait time blur effect */
+.wait-time-blur {
+    filter: blur(8px);
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Animation for cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* Staggered animation delays */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+
+/* Hero gradient overlay */
+.hero-gradient {
+    background: linear-gradient(135deg, rgba(0, 48, 135, 0.9) 0%, rgba(0, 94, 184, 0.85) 50%, rgba(0, 169, 206, 0.8) 100%);
+}
+
+/* Status pill animations */
+.status-pill {
+    transition: all 0.2s ease-in-out;
+}
+
+.status-pill:hover {
+    transform: scale(1.05);
+}
+
+/* Card hover effects */
+.hospital-card {
+    transition: all 0.2s ease-in-out;
+}
+
+.hospital-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 94, 184, 0.1), 0 8px 10px -6px rgba(0, 94, 184, 0.1);
+}
+
+/* Button pulse animation for CTA */
+@keyframes pulse-ring {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 94, 184, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 94, 184, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 94, 184, 0);
+    }
+}
+
+.pulse-cta {
+    animation: pulse-ring 2s infinite;
+}
+
+/* Loading skeleton */
+.skeleton {
+    background: linear-gradient(90deg, #E8EDEE 25%, #F0F4F5 50%, #E8EDEE 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Toast customization */
+[data-sonner-toaster] {
+    font-family: 'IBM Plex Sans', sans-serif;
+}
